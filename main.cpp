@@ -7,9 +7,11 @@
  */
 #include <bits/stdc++.h>
 
-#define LIMIT 20
-#define SPEED 40
+#define LIMIT 25
+#define SPEED 50
+
 using namespace std;
+bool BFS_ONLY = false;
 
 struct Node {
   int x, y;
@@ -261,7 +263,7 @@ struct Game {
   }
 
   Node next_dir() {
-    if (snake.size() < size) {
+    if (BFS_ONLY || snake.size() < size) {
       vector<Node> path = dir_path(shortest_path(apple));
       if (path.size() > 0)
         return path[0];
@@ -316,8 +318,27 @@ struct Game {
   }
 };
 
-int main() {
-  Game* g = new Game(10, 1);
-  g->run();
+void tester(int size, int rounds) {
+  ofstream of;
+  of.open("data.txt", ios::out | ios::trunc);
+  of << rounds << "\n";
+  of << size << "\n";
+  Game* g = new Game(size, 0);
+  for (int i = 0; i < rounds; ++i)
+    of << g->run() << "\n";
+  of.close();
+  system("python3 process.py");
+}
+
+int main(int argc, char* argv[]) {
+  if (argc > 1) {
+    BFS_ONLY = true;
+    tester(10, stol(argv[1], NULL, 10));
+  }
+
+  else {
+    Game* g = new Game(10, 1);
+    g->run();
+  }
   return 0;
 }
