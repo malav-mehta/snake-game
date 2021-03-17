@@ -8,7 +8,7 @@
 #include <bits/stdc++.h>
 
 #define LIMIT 25
-#define SPEED 50
+#define SPEED 20
 
 using namespace std;
 bool BFS_ONLY = false;
