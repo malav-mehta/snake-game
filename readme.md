@@ -9,4 +9,8 @@ The approach of this solution will be soon uploaded and explained as a PDF.
 
 This project was built for the IB Mathematics AA HL Internal Assessment. If you have any questions, contact me at malavhmehta[at]outlook.com.
 
-Inspired by: [CodeBullet](https://www.youtube.com/watch?v=tjQIO1rqTBE&ab_channel=CodeBullet)
+### References
+
+Inspiration: [CodeBullet](https://www.youtube.com/watch?v=tjQIO1rqTBE&ab_channel=CodeBullet)
+
+Hamiltonian Cycle Heuristic: [Chuyang Liu](https://github.com/chuyangliu/snake/blob/master/docs/algorithms.md#hamilton-solver)
