@@ -13,11 +13,10 @@
 \usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
-    linkcolor=blue,
+    linkcolor=black,
     filecolor=magenta,      
-    urlcolor=cyan,
+    urlcolor=black,
 }
-
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -53,8 +52,8 @@
 }
 
 \title{Mathematical Approach to an Optimal Algorithmic \textit{Snake} Game Agent}
-\author{Malav Mehta}
-\date{\today}
+\author{hxl941}
+\date{April 12, 2021}
 
 \begin{document}
 \begin{singlespace}
@@ -90,11 +89,11 @@ In my implementation of the \textit{Snake} game (Figure \ref{fig:game_mechanics}
 
 \section{Modelling The Game}
 
-While researching suitable models for representing the game, I came across graph theory, which is a branch in discrete mathematics. This is option topic 10 in last year's curriculum. 
+While researching suitable models for representing the game, I came across graph theory, which is a branch in discrete mathematics. Although this was not taught in class, I found many explanatory articles online.
 
 \subsection{Graph Theory}
 
-Graph theory refers to a way in which data can be represented. A graph is a pair $G=(V,E)$ where $V$ is a set of vertices and $E$ is a set of pairs of vertices. The edge $e$ between vertices $v_{1}$ and $v_{2}$ is written as $e=v_{1}v_{2}$. $v_{1}$ and $v_{2}$ are thus the endpoints of edge $e$ and are said to be adjacent to each other. A pair of vertices can be joined by at most one edge and no vertex can be joined to itself by an edge. For example, $G_{1}=(V_{1},E_{1})$ where $V_{1}=\{v_{1}, v_{2}, v_{3}\}$ and $E_{1}=\{v_{1}v_{2}, v_{2}v_{3}\}$ is drawn:
+Graph theory refers to a way in which data can be represented. A graph is a pair $G=(V,E)$ where $V$ is a set of vertices and $E$ is a set of pairs of vertices. The edge $e$ between vertices $v_{1}$ and $v_{2}$ is written as $e=v_{1}v_{2}$. $v_{1}$ and $v_{2}$ are thus the endpoints of edge $e$ and are said to be adjacent to each other \cite{galvin2009}. A pair of vertices can be joined by at most one edge and no vertex can be joined to itself by an edge. For example, $G_{1}=(V_{1},E_{1})$ where $V_{1}=\{v_{1}, v_{2}, v_{3}\}$ and $E_{1}=\{v_{1}v_{2}, v_{2}v_{3}\}$ is drawn:
 
 \begin{figure}[!h]
 \centering
@@ -174,13 +173,13 @@ Under this model, the position of the snake and the apple can be represented as 
 
 \section{Base Approaches}
 
-This model represents the current state and the positions of the snake and the apple on the game plane. The end goal is to be able to program a mathematical approach; a common way to implement mathematical logic is to describe it in a function where the current state is passed as input and a useful value is returned.
+This model represents the current state and the positions of the snake and the apple on the game plane. The end goal is to be able to program a mathematical approach; a common way to implement mathematical logic into computer programs is to describe it in a function where the current state is passed as input and a useful value is returned.
 
 For this exploration, this function must find the best path that the snake should follow to win the game. With this path generated, the first edge in the set of edges of the path contains the next vertex of where the snake head needs to be. Knowing this, the program can calculate the direction in which the snake must turn. Therefore, the return value should be the first edge of the best path.
 
 \subsection{Breadth-First Search}
 
-An intuitive method for generating the best path with the goal of producing a time efficient solution is to compute the shortest path between the snake head and the apple since it is the quickest way for the snake to reach the apple and increase in size. A systematic approach for finding the shortest path between two vertices in a graph is to use the Breadth-First Search (BFS) algorithm. In the real-world, alongside other path-finding algorithms such as A-star and Dijkstra's, BFS is used in problems where exploring a graph is needed, such as for finding optimal flight routes between two cities. The BFS traversal of a graph terminates when every vertex of the graph has been visited. The concept is to visit all adjacent vertices of the starting vertex before visiting the vertices adjacent to the adjacent vertices. The algorithm takes the following steps:
+An intuitive method for generating the best path with the goal of producing a time efficient solution is to compute the shortest path between the snake head and the apple since it is the quickest way for the snake to reach the apple and increase in size. A systematic approach for finding the shortest path between two vertices in a graph is to use the Breadth-First Search (BFS) algorithm. In the real-world, alongside other path-finding algorithms such as A-star and Dijkstra's, BFS is used in problems where exploring a graph is needed, such as for finding optimal flight routes between two cities. The BFS traversal of a graph terminates when every vertex of the graph has been visited. The concept is to visit all adjacent vertices of the starting vertex before visiting the vertices adjacent to the adjacent vertices. The algorithm takes the following steps \cite{gadagkar2019}:
 
 \begin{enumerate}
 	\item Keep a list of all vertices seen so far. Add the starting vertex to this list.
@@ -211,7 +210,7 @@ Consider Figure \ref{fig:graph_g2} with graph $G_{2} = (V_{2}, E_{2})$:
 	\label{fig:graph_g2}
 \end{figure}
 
-Directly applying the BFS algorithm with starting vertex $a$, the traversal for the graph $G_{2}$ would be: $a \rightarrow b \rightarrow c \rightarrow e \rightarrow d \rightarrow f$. Rather than traversing all vertices, the application of BFS for the \textit{Snake} game problem requires finding the shortest path between the snake head and the apple. To accomplish this goal, we can modify the initial algorithm as such:
+Directly applying the BFS algorithm with starting vertex $a$, the traversal for the graph $G_{2}$ would be: $a \rightarrow b \rightarrow c \rightarrow e \rightarrow d \rightarrow f$. Rather than traversing all vertices, the application of BFS for the \textit{Snake} game problem requires finding the shortest path between the snake head and the apple. To accomplish this goal, we can modify the initial algorithm as such \cite{bose_howat2015}:
 
 \begin{enumerate}
 	\item Keep a list of vertices seen so far and the path required to get to the vertex as a pair. Add the pair of the starting vertex and an empty path to this list.
@@ -236,7 +235,7 @@ Despite being a very quick solution and seemingly sound at first glance, a more 
 
 \subsection{Hamiltonian Cycle}
 
-To remedy the flaw in the BFS approach, I decided to focus on a solution that would guarantee a win even if it meant that it might not be efficient time-wise. In my research, I watched videos of players winning \textit{Snake}. At first these players would take a greedy shortest path approach but changed their strategy once the snake got longer, instead looping one fixed cycle. They traverse the game plane such that they visit each point exactly once before returning to the starting point. This is recognized as a Hamiltonian cycle, formally defined to be a closed loop on a graph where each vertex is visited exactly once. Consider Figure \ref{fig:graph_g3} with graph $G_{3} = (V_{3}, E_{3})$:
+To remedy the flaw in the BFS approach, I decided to focus on a solution that would guarantee a win even if it meant that it might not be efficient time-wise. In my research, I watched videos of players winning \textit{Snake}. At first these players would take a greedy shortest path approach but changed their strategy once the snake got longer, instead looping one fixed cycle \cite{easyspeezy2020}. They traverse the game plane such that they visit each point exactly once before returning to the starting point. This is recognized as a Hamiltonian cycle, formally defined to be a closed loop on a graph where each vertex is visited exactly once \cite{rahman2005}. Consider Figure \ref{fig:graph_g3} with graph $G_{3} = (V_{3}, E_{3})$:
 
 \begin{figure}[!h]
 \centering
@@ -266,7 +265,7 @@ $G_{3}$ is said to be Hamiltonian since there is a Hamiltonian cycle: $a \righta
 For graph $G$ to be Hamiltonian, its width $m$ and height $n$ must follow these constraints:
 
 \begin{itemize}
-	\item $m>1$, $n>1$ and either $m$ or $n$ is even. \textbf{Proof by construction}: If $m$ or $n$ is 2, a Hamiltonian cycle can be constructed by forming a ring around the vertices. Otherwise, there must be a side in the grid with an even number of vertices greater than 2. We will call this direction \textit{vertical} (meaning that the graph will have an even number of rows) and the other direction \textit{horizontal}. Start from the first column of the first row and begin the path by extending it to the last column of this first row. Go one row below and return to the second column. If this is the last row of the graph, then extend the path to the first column and connect it back to the vertex on the first column of the first row. If this is not the last row, then stay on the second column, drop one column down and repeat the initial process. Since there are an even number of rows, there will be exactly $\frac{n}{2}$ repetitions. Note that if $m > 2$, the length of $m$ does not matter.
+	\item $m>1$, $n>1$ and either $m$ or $n$ is even. \textbf{Proof by construction} \cite{zagaran2018}: If $m$ or $n$ is 2, a Hamiltonian cycle can be constructed by forming a ring around the vertices. Otherwise, there must be a side in the grid with an even number of vertices greater than 2. We will call this direction \textit{vertical} (meaning that the graph will have an even number of rows) and the other direction \textit{horizontal}. Start from the first column of the first row and begin the path by extending it to the last column of this first row. Go one row below and return to the second column. If this is the last row of the graph, then extend the path to the first column and connect it back to the vertex on the first column of the first row. If this is not the last row, then stay on the second column, drop one column down and repeat the initial process. Since there are an even number of rows, there will be exactly $\frac{n}{2}$ repetitions. Note that if $m > 2$, the length of $m$ does not matter.
 
 Therefore, it is always possible to construct a Hamiltonian cycle when $m>1$, $n>1$ and either $m$ or $n$ is even. See Figure \ref{fig:cycle_proof} for a visual example of the above proof.
 
@@ -305,14 +304,14 @@ Therefore, it is always possible to construct a Hamiltonian cycle when $m>1$, $n
 \end{figure}
 
 	
-	\item \textbf{Or} $mn = 1$. Under this scenario, the graph contains only one vertex and is trivially Hamiltonian with a zero length path that visits the vertex.
+	\item \textbf{Or} $mn = 1$. Under this scenario, the graph contains only one vertex and is trivially Hamiltonian with a zero length cycle that visits the vertex.
 \end{itemize}
 
-If only one of $m$ and $n$ are equal to 1, then the graph is a straight line. In this case, it is impossible to form a Hamiltonian cycle. If both $m$ and $n$ are odd and $mn$ is not equal to 1, then we have a bipartite graph with unbalanced vertex parity, which, by Grinberg's Theorem, is known to not be Hamiltonian.
+If only one of $m$ and $n$ are equal to 1, then the graph is a straight line. In this case, it is impossible to form a Hamiltonian cycle. If both $m$ and $n$ are odd and $mn$ is not equal to 1, then we have a bipartite graph with unbalanced vertex parity, which, by Grinberg's Theorem, is known to not be Hamiltonian \cite{zagaran2018}.
 
 To implement this idea in code as an autonomous agent, the most efficient solution would be to generate a Hamiltonian cycle for the game graph when the game is first initialized. This way, the function into which the game state would be the input already has the best path for the snake in memory and the code can check where the snake head is to determine where it should turn next.
 
-Note that generating a Hamiltonian cycle is an NP (non-polynomial time) hard problem in computation, since there are $\frac{1}{2} (n-1)!$ candidate cycles in any graph with $n$ vertices. Instead, I used a heuristic proposed by Chuyang Liu (see code in Figure \ref{fig:cycle_code} of Appendix \ref{sec:appendix_code}). After making this implementation, as can be seen in Figure \ref{fig:finished_cycle} the game can now be solved.
+Note that generating a Hamiltonian cycle is an NP (non-polynomial time) hard problem in computation, since there are $\frac{1}{2} (n-1)!$ candidate cycles in any graph with $n$ vertices \cite{mitchell2019}. Instead, I used a heuristic proposed by Chuyang Liu \cite{liu2019} (see code in Figure \ref{fig:cycle_code} of Appendix \ref{sec:appendix_code}). After making this implementation, the game can now be won as can be seen in Figure \ref{fig:finished_cycle}.
 
 \begin{figure}[!h]
 \centering
@@ -327,7 +326,7 @@ While this is a valid approach to solving the game, it does not address the need
 
 Despite their shortcomings, both the BFS and Hamiltonian cycle approaches had their strengths. For a grid where $m=n=10$, the agent using the BFS approach usually survived until the length of the snake was over 20. Notably, it got to this length very quickly using its greedy shortest path approach. The Hamiltonian cycle on the other hand, despite being a slower approach, always guaranteed that the game would be won.
 
-Referring back to the method that human players took to beat the game, we can observe that a combination of the two aforementioned base approaches will be the most optimal. A final approach, in which both of these solutions are combined, will be enhanced by both of their benefits. To model the human players, the third approach will first begin with BFS followed by a conversion to the Hamiltonian cycle after some length. The most critical aspect with this approach is to determine what length maximizes the benefits of the speed of BFS in order to minimize the time but also assures survival of the snake. To find this length, I can optimize using differential calculus a function $T$  where $T(l_{s})$ represents the total amount of moves (which are to be understood as turns including going straight for this report) that will be taken if the model switches from BFS to the Hamiltonian cycle at length $l_{s}$. Note that much of this analysis requires knowing the size of the grid beforehand. Therefore, $m=n=10$ will be used as the grid size for the game plane.
+Referring back to the method that human players took to beat the game, we can observe that a combination of the two aforementioned base approaches will be the most optimal. A final approach, in which both of these solutions are combined, will be enhanced by both of their benefits. To model the human players, the third approach will first begin with BFS followed by a conversion to the Hamiltonian cycle after some length. The most critical aspect with this approach is to determine what length maximizes the benefits of the speed of BFS in order to minimize the time but also assures survival of the snake. To find this length, I can optimize using differential calculus a function $T$  where $T(l_{s})$ represents the total amount of moves (which are to be understood as turns including going straight) that will be taken if the model switches from BFS to the Hamiltonian cycle at length $l_{s}$. Note that much of this analysis requires knowing the size of the grid beforehand. Therefore, $m=n=10$ will be used as the grid size for the game plane.
 
 \subsection{Modelling Each Approach}
 
@@ -421,7 +420,7 @@ T(l_{s}) & = [0.4426l\ln(l) + 5.9571l] \Big|_{0}^{l_{s}} + [50l-\frac{1}{4}l^2] 
 \end{split}
 \end{equation}
 
-It should follow that $l_s$ at the local minimum of $T(l_s)$ is the optimal length of snake at which the Hamiltonian cycle agent should be used instead of the BFS agent. However, looking at the graph of the function (see Figure \ref{fig:T_l_prelim_graph}), we observe that this local minimum occurs when $l_s ~ 80$. Since we know that the BFS approach cannot survive to that length, we must find a way to factor in the probability of the snake's death prior to changing to the Hamiltonian cycle approach so that the final approach may win the game.
+It should follow that $l_s$ at the local minimum of $T(l_s)$ is the optimal length of snake at which the Hamiltonian cycle agent should be used instead of the BFS agent. However, looking at the graph of the function (see Figure \ref{fig:T_l_prelim_graph}), we observe that this local minimum occurs when $l_s \sim 80$. Since we know that the BFS approach cannot survive to that length, we must find a way to factor in the probability of the snake's death prior to changing to the Hamiltonian cycle approach so that the final approach may win the game.
 
 \begin{figure}[!h]
 \centering
@@ -449,7 +448,7 @@ It should follow that $l_s$ at the local minimum of $T(l_s)$ is the optimal leng
 
 \subsection{Probabilistic Modelling}
 
-To add consideration of the snake's death we must model the probability of the snake dying at any lengths. This relationship can be found by letting a BFS agent play 10 000 times and recording the dying length of each game. Dividing the count of deaths at each length by the total deaths, we find the probability of the snake dying at a given length. The results of this simulation are summarized below (see Figure \ref{fig:bfs_sim_prob}).
+To add consideration of the snake's death we must model the probability of the snake dying at any given length. This relationship can be found by letting a BFS agent play 10 000 times and recording the dying length of each game. Dividing the count of deaths at each length by the total deaths, we find the probability of the snake dying at a given length. The results of this simulation are summarized below (see Figure \ref{fig:bfs_sim_prob}).
 
 \begin{figure}[!h]
 \centering
@@ -485,7 +484,7 @@ To add consideration of the snake's death we must model the probability of the s
 	\label{fig:bfs_sim_prob}
 \end{figure}
 
-As can be seen from this graph, the snake's dying lengths fit a normal distribution with mean $\mu = 23.15$ and standard deviation $\sigma = 5.99$. Note that because the dying length of a snake is a discrete variable being approximated by normal distribution, which is continuous, a continuity correction is needed. Since areas under a continuous distribution give probabilities rather the the height of the curve, for an integer value $x$ from a set of discrete values including $\{\ldots, x-1, x, x+1, \ldots\}$, $P(X=x)$ can be approximated to $P(x-0.5 < X < x+0.5)$. The halfway points are the boundaries of the bars that represent the area under the curve for the discrete value $x$.
+As can be seen from this graph, the snake's dying lengths fit a normal distribution with mean $\mu = 23.15$ and standard deviation $\sigma = 5.99$. Note that because the dying length of a snake is a discrete variable being approximated by normal distribution, which is continuous, a continuity correction is needed. Rather the the height of the curve, it is the area under a continuous distribution that gives the probability of an event, so for an integer value $x$ from a set of discrete values including $\{\ldots, x-1, x, x+1, \ldots\}$, $P(X=x)$ can be approximated to $P(x-0.5 < X < x+0.5)$ \cite{wilson2011}. The halfway points are the boundaries of the bars that represent the area under the curve for the discrete value $x$.
 
 For adding this probabilistic model to $T(l_s)$, we will find the probability of the snake being dead by a certain length. If this probability is very high, then it can be concluded that it is not favourable to continue using the BFS approach beyond this length, and the autonomous agent should switch to the Hamiltonian cycle approach. Using $e(l)$ to represent the probability that the snake will be dead (and the game will end) at length $l$, we have:
 \begin{equation}
@@ -513,7 +512,7 @@ Since $0 \leq e(l) \leq 1$ whereas the total move counts are in the thousands, $
 		    ymin=0, ymax=2500,
 		]
 
-		\addplot gnuplot [very thick,mark=none,color=green,domain=0:100] {350*erf(5.0*(20*x-463.0)/(599.0*sqrt(2))) + 0.4426*x*log(x) + 0.25*x^2 - 44.0429*x + 2850};
+		\addplot gnuplot [very thick,mark=none,color=green,domain=0:100,samples=100] {350*erf(5.0*(20*x-463.0)/(599.0*sqrt(2))) + 0.4426*x*log(x) + 0.25*x^2 - 44.0429*x + 2850};
 		\end{axis}
 	\end{tikzpicture}
 	\caption{Graphing $T(l_s)$}
@@ -522,18 +521,61 @@ Since $0 \leq e(l) \leq 1$ whereas the total move counts are in the thousands, $
 
 \section{Evaluation}
 
-\subsection{Comparison}
+\begin{figure}[!h]
+\centering
+	\begin{tabular}{ || c | c | c | c | c ||}
+	\hline
+	Approach & Dying Length & Total Moves & Win \% & Total Moves (Wins)\\
+	\hline
+	\hline
+	Breadth-First Search & 22.89 & 164.77 & 0.00\% & —\\
+	\hline		
+	Hamiltonian Cycle & 100.00 & 2488.57 & 100.00\% & 2488.57\\
+	\hline		
+	Analytical ($l_s=17$) & 80.25 & 1454.93 & 77.61\% & 1871.94\\
+	\hline		
+	\end{tabular}
+	\caption{Average dying length, move count and win \% for each approach, 1000 runs}
+	\label{fig:approach_comparison}
+\end{figure}
 
-\subsection{Reflection}
+To determine the best approach, they can all be compared with respect to the data in Figure \ref{fig:approach_comparison} when they are run for 1000 trials. As expected from previous reflections, if Breadth-First Search was a flawless approach where the snake would never be trapped, it would have the least moves. The pure Hamiltonian cycle approach guaranteed a win, whereas the analytical approach, despite only winning 77.61\% of the time, takes 24.78\% less moves than the Hamiltonian cycle approach. The win rate and move count can be tuned arbitrarily by changing $k$.
+
+The process of this investigation was successful at comprehensively mathematically modelling the $Snake$ game as well as generating a methodology for calculating the switch length for any $m$ and $n$ in the analytical approach. Transferring the logic to a computer program was also achieved. By contrast, one significant limitation was that experimental simulations were required to be conducted for finding a) coefficients for the logarithmic model of the move count function for the BFS approach and b) finding the correct $\mu$ and $\sigma$ values for the normal distribution of the probability function $e(l)$. Thus, while the applying the process undertaken to find $l_s$ for $m=n=10$ is robust, the dependence on large quantities of experimental data can become difficulty and resource-heavy to compute for much larger sizes of $m$ and $n$, making the overall approach not practical for the general case. Hence, a relevant extension could be to find a process not requiring experimental data. Additionally, $m$ and $n$ being constrained by the restriction of the Hamiltonian cycle limit the scope of the approaches used in the investigation. Another limitation is that by only exploring two base approaches, it cannot be conclusively determined that the overall approach is the most efficient way to win the game. For example, alternative path-finding algorithms other than BFS may be less prone to being trapped.
 
 \section{Conclusion}
 
+In conclusion, the most optimal algorithmic \textit{Snake} game agent was the one using both base approaches. The analytical approach was more efficient than the pure Hamiltonian cycle and more closely modelled how human players won the game in short times. The only consideration to make when choosing this approach is that for lower values of $k$, the win rate may not be very high. Through this exploration I learned many new concepts — namely graph theory — and applied concepts I was already familiar with to a real-life problem. This experience taught me that math can significantly help optimize and analyse real-world problems and the theory I used in this investigation are key for many applications I use daily, such as Google Maps.
+
 \pagebreak
 \begin{thebibliography}{9}
-\bibitem{galvin2009} 
-Galvin, David. \textit{Discrete Mathematics, Spring 2009 Graph Theory Notation,”} March 4, 2009. \url{https://www3.nd.edu/~dgalvin1/60610/60610_S09/60610graphnotation.pdf}
-\end{thebibliography}
+\bibitem{bose_howat2015}
+Bose, Prosenjit, and John Howat. \textit{Depth-First Search and Breadth-First Search.} Discrete Mathematics Study Center. July 12, 2015. \\\texttt{https://cglab.ca/~discmath/graphs-applications.html}
 
+\bibitem{easyspeezy2020}
+EasySpeezy. \textit{He Thought I Couldn't Speedrun the Google Snake Game...} YouTube. November 15, 2020. \url{www.youtube.com/watch?v=O3bDZX0SAfk}
+
+\bibitem{gadagkar2019}
+Gadagkar, Shweta. \textit{Traversing Graphs in Discrete Math.} Study.com. September 16, 2018. \\\url{https://study.com/academy/lesson/coloring-traversing-graphs-in-discrete-math.html}
+
+\bibitem{galvin2009} 
+Galvin, David. \textit{Discrete Mathematics, Spring 2009 Graph Theory Notation.} March 4, 2009. \url{https://www3.nd.edu/~dgalvin1/60610/60610_S09/60610graphnotation.pdf}
+
+\bibitem{liu2019}
+Liu, Chuyang. \textit{Algorithms.} GitHub, November 18, 2019. \\\url{https://github.com/chuyangliu/snake/blob/master/docs/algorithms.md}
+
+\bibitem{mitchell2019}
+Mitchell, John. \textit{Hamiltonian Cycle Is NP-Complete.} Rensselaer Polytechnic Institute. February 2, 2019. \\\url{http://eaton.math.rpi.edu/faculty/Mitchell/courses/matp6620/notesMATP6620/lecture06/06A_hamiltoniancycle.pdf}
+
+\bibitem{rahman2005}
+M. Sohel Rahman, and M. Kaykobad. \textit{On Hamiltonian cycles and Hamiltonian paths.} Information Processing Letters 94, no.1 (2005): 37-41.
+
+\bibitem{wilson2011}
+Wilson, Steven. \textit{Almost Normal Distributions with Discrete Data.} Milefoot.com. September 4, 2011. \url{http://www.milefoot.com/math/stat/pdfc-normaldisc.htm}
+
+\bibitem{zagaran2018}
+Zagaran. \textit{Hamilton Paths/Cycles in Grid Graphs.} Mathematics Stack Exchange. August 31, 2018. \\\url{https://math.stackexchange.com/questions/1699203/hamilton-paths-cycles-in-grid-graphs}
+\end{thebibliography}
 \pagebreak
 \appendix
 \section{C++ Code}\label{sec:appendix_code}
@@ -586,7 +628,7 @@ void build_cycle() {
     cycle_size = path_dir.size();
 }
 \end{lstlisting}
-\caption{Code for generating a \textbf{Hamiltonian Cycle} (heuristic).}
+\caption{Code for generating a \textbf{Hamiltonian Cycle} (heuristic) \cite{liu2019}}
 \label{fig:cycle_code}
 \end{figure}
 

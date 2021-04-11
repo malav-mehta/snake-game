@@ -12,6 +12,7 @@
 
 using namespace std;
 bool BFS_ONLY = false;
+const int breakpoint = 101;
 
 struct Node
 {
@@ -98,7 +99,7 @@ struct Table
 
 struct Game
 {
-  int size, gui, cycle_size;
+  int size, gui, cycle_size, total_move_count;
   Table<int> grid, vis;
   Table<Node> cycle;
   vector<Node> snake;
@@ -138,6 +139,7 @@ struct Game
     move_count.clear();
     move_count.resize(size * size + 1);
     cycle_size = 0;
+    total_move_count = 0;
 
     snake.push_back(Node(0, 0));
     for (Node u : snake)
@@ -308,7 +310,7 @@ struct Game
 
   Node next_dir()
   {
-    if (BFS_ONLY || snake.size() < size)
+    if (BFS_ONLY || snake.size() < breakpoint)
     {
       vector<Node> path = dir_path(shortest_path(apple));
       if (path.size() > 0)
@@ -348,7 +350,7 @@ struct Game
 
     while (!over && snake.size() < cnt)
     {
-      ++move_count[(int)snake.size()];
+      ++total_move_count;
       auto start = chrono::high_resolution_clock::now();
       if (!tick(next_dir()))
         over = true;
@@ -371,9 +373,17 @@ struct Game
     return (int)snake.size();
   }
 
+  pair<int, int> run_total_moves()
+  {
+    init();
+    loop();
+    return make_pair((int)snake.size(), total_move_count);
+  }
+
   pair<int, vector<int>> run_for_moves()
   {
     init();
+    build_cycle();
     loop();
     return make_pair((int)snake.size(), move_count);
   }
@@ -407,12 +417,27 @@ void tester(int size, int rounds)
   system("python3 process.py");
 }
 
+void total_move_sim(int size, int rounds)
+{
+  ofstream of;
+  of.open("total_moves.txt", ios::out | ios::trunc);
+  Game *g = new Game(size, 0);
+  for (int i = 0; i < rounds; ++i)
+  {
+    pair<int, int> p = g->run_total_moves();
+    of << p.first << " " << p.second << "\n";
+  }
+  of.close();
+  system("python3 process_total.py");
+}
+
 int main(int argc, char *argv[])
 {
   if (argc > 1)
   {
-    BFS_ONLY = true;
-    tester(10, stol(argv[1], NULL, 10));
+    // BFS_ONLY = true;
+    // tester(10, stol(argv[1], NULL, 10));
+    total_move_sim(10, stol(argv[1], NULL, 10));
   }
 
   else
