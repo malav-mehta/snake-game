@@ -4,6 +4,7 @@ from scipy.stats import norm
 import datetime
 
 filename = "data.txt"
+output = "format.txt"
 plt.style.use("seaborn-whitegrid")
 
 with open(filename, "r") as f:
@@ -36,3 +37,6 @@ with open(filename, "r") as f:
     plt.ylabel("Probability")
     plt.title("Probability Histogram of Terminating Scores (Size: %d)" % size)
     plt.savefig(datetime.datetime.now().strftime("renders/%Y-%m-%d %H-%M-%S"))
+
+    with open(output, "w") as o:
+        o.write("".join(list(map(str, zip(x, np.round(y/rounds, 4))))))

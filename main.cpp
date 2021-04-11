@@ -102,6 +102,7 @@ struct Game
   Table<int> grid, vis;
   Table<Node> cycle;
   vector<Node> snake;
+  vector<int> move_count;
   Node apple;
 
   Game(int _size, int _gui)
@@ -134,6 +135,8 @@ struct Game
   {
     grid.clear();
     snake.clear();
+    move_count.clear();
+    move_count.resize(size * size + 1);
     cycle_size = 0;
 
     snake.push_back(Node(0, 0));
@@ -345,6 +348,7 @@ struct Game
 
     while (!over && snake.size() < cnt)
     {
+      ++move_count[(int)snake.size()];
       auto start = chrono::high_resolution_clock::now();
       if (!tick(next_dir()))
         over = true;
@@ -366,7 +370,29 @@ struct Game
     loop();
     return (int)snake.size();
   }
+
+  pair<int, vector<int>> run_for_moves()
+  {
+    init();
+    loop();
+    return make_pair((int)snake.size(), move_count);
+  }
 };
+
+void move_sim(int size, int rounds)
+{
+  ofstream of;
+  of.open("moves.txt", ios::out | ios::trunc);
+  Game *g = new Game(size, 0);
+  for (int i = 0; i < rounds; ++i)
+  {
+    pair<int, vector<int>> p = g->run_for_moves();
+    for (int j = 0; j < p.first; ++j)
+      of << j << " " << p.second[j] << "\n";
+  }
+  of.close();
+  system("python3 process_moves.py");
+}
 
 void tester(int size, int rounds)
 {
