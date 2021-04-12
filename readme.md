@@ -1,4 +1,4 @@
-## Snake Game Bot
+## Snake Game Bot (in progress)
 
 The purpose of this project is to build an automated snake game
 player which always beats the game 100% of the time in the minimum amount of ticks (time).
