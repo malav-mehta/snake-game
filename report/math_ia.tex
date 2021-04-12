@@ -1,5 +1,6 @@
 \documentclass[12pt]{article}
 \usepackage{color}
+\usepackage{appendix}
 \usepackage{floatrow}
 \usepackage[margin=1in]{geometry}
 \usepackage{listings}
@@ -9,6 +10,7 @@
 \usepackage{subfig}
 \usepackage{amsmath}
 \usepackage{gnuplottex}
+\usepackage{titling}
 
 \usepackage{hyperref}
 \hypersetup{
@@ -52,20 +54,20 @@
 }
 
 \title{Mathematical Approach to an Optimal Algorithmic \textit{Snake} Game Agent}
-\author{hxl941}
-\date{April 12, 2021}
+\author{}
+\date{}
+
+\posttitle{\par\end{center}}
+\setlength{\droptitle}{-9ex}
+\preauthor{}
+\postauthor{}
+\predate{}
+\postdate{}
 
 \begin{document}
 \begin{singlespace}
 \maketitle
-\thispagestyle{empty}
-\tableofcontents
 \end{singlespace}
-
-\clearpage
-\setcounter{page}{1}
-\pagebreak
-
 
 \section{Introduction}
 
@@ -173,9 +175,7 @@ Under this model, the position of the snake and the apple can be represented as 
 
 \section{Base Approaches}
 
-This model represents the current state and the positions of the snake and the apple on the game plane. The end goal is to be able to program a mathematical approach; a common way to implement mathematical logic into computer programs is to describe it in a function where the current state is passed as input and a useful value is returned.
-
-For this exploration, this function must find the best path that the snake should follow to win the game. With this path generated, the first edge in the set of edges of the path contains the next vertex of where the snake head needs to be. Knowing this, the program can calculate the direction in which the snake must turn. Therefore, the return value should be the first edge of the best path.
+This model represents the current state and the positions of the snake and the apple on the game plane. The end goal is to be able to program a mathematical approach; a common way to implement mathematical logic into computer programs is to describe it in a function where the current state is passed as input and a useful value is returned. For this exploration, this function must find the best path that the snake should follow to win the game. With this path generated, the first edge in the set of edges of the path contains the next vertex of where the snake head needs to be. Knowing this, the program can calculate the direction in which the snake must turn. Thus, the return value should be the first edge of the best path.
 
 \subsection{Breadth-First Search}
 
@@ -195,8 +195,8 @@ Consider Figure \ref{fig:graph_g2} with graph $G_{2} = (V_{2}, E_{2})$:
 		\node[main] (1) {$a$};
 		\node[main] (2) [right of=1] {$b$};
 		\node[main] (3) [below right of=2] {$c$};
-		\node[main] (4) [below left of=3] {$d$};
-		\node[main] (5) [below left of=4] {$e$};
+		\node[main] (4) [below of=2] {$d$};
+		\node[main] (5) [below of=1] {$e$};
 		\node[main] (6) [left of=5] {$f$};
 
 		\draw (1) to (2);
@@ -343,7 +343,7 @@ The limited domain of the data points collected is a result of the fact that wit
 			title={Mean moves required to increase snake length with BFS},
 		    axis lines = left,
 		    xlabel = {Snake Length ($l$)},
-    		ylabel = {Moves Required To Reach $l+1$ ($k$)},
+    		ylabel = {Moves Required To Reach $l+1$},
     		xmin=0, xmax=28,
 		    ymin=0, ymax=11,
 		]
@@ -497,9 +497,9 @@ Finally, we can incorporate $e(l)$ into $T(l_s)$. For a constant $k$, we can now
 \begin{equation}
 T(l_s) = ke(l_s) + 0.4426l_{s}\ln(l_{s}) + \frac{1}{4}l_{s}^2 - 44.0429l_{s} + 2500
 \end{equation}
-The concept behind this equation is to penalize waiting longer to switch between approaches. The purpose of $T(l_s)$ was to model the number of total moves taken to beat the game by switching between the approaches at $l_s$, but since $e(l)$ grows at longer lengths as the probability of the snake dying by the BFS agent will increase the longer it gets, a "penalty" move count is added to $T(l_s)$. This will shift the local minimum of the graph towards a shorter switch length and will thus ensure that the switch length is not computed such that the snake will already be dead due to the BFS agent.
+The concept behind this equation is to penalize waiting longer to switch between approaches. The purpose of $T(l_s)$ was to model the number of total moves taken to beat the game by switching between the approaches at $l_s$, but since $e(l)$ grows at longer lengths as the probability of the snake dying by the BFS agent will increase the longer it gets, a ``penalty'' move count is added to $T(l_s)$. This will shift the local minimum of the graph towards a shorter switch length and will thus ensure that the switch length is not computed such that the snake will already be dead due to the BFS agent.
 
-Since $0 \leq e(l) \leq 1$ whereas the total move counts are in the thousands, $e(l)$ is multiplied by a constant $k$. The bigger the value of $k$, the more the weight of the snake death penalty and the shorter the switch length of the snake. Referring back to experienced players who develop quick strategies to beat the game, their switch between the shortest path and the Hamiltonian cycle approach comes at a trade-off between finishing the game in a lower amount of time and dying early on. Essentially, $k$ is arbitrarily based on how "risky" a player wants to be in pursuit of a quicker win time. The graph shown in Figure \ref{fig:T_l_final_graph} below uses $k=700$. Using a GDC to compute the first local minimum of the final version of $T(l_s)$, we solve for the optimal length $l_s = 17.779$. Note this result is a real number, not an integer length. Thus, in practice, $\lfloor{l_s}\rfloor$ will be used as the switching point in the final agent as the safer option between $\lfloor{l_s}\rfloor$ and $\lceil{l_s}\rceil$ in terms of ensuring the snake's survival.
+Since $0 \leq e(l) \leq 1$ whereas the total move counts are in the thousands, $e(l)$ is multiplied by a constant $k$. The bigger the value of $k$, the more the weight of the snake death penalty and the shorter the switch length of the snake. Referring back to experienced players who develop quick strategies to beat the game, their switch between the shortest path and the Hamiltonian cycle approach comes at a trade-off between finishing the game in a lower amount of time and dying early on. Essentially, $k$ is arbitrarily based on how ``risky'' a player wants to be in pursuit of a quicker win time. The graph shown in Figure \ref{fig:T_l_final_graph} below uses $k=700$. Using a GDC to compute the first local minimum of the final version of $T(l_s)$, we solve for the optimal length $l_s = 17.779$. Note this result is a real number, not an integer length. Thus, in practice, $\lfloor{l_s}\rfloor$ will be used as the switching point in the final agent as the safer option between $\lfloor{l_s}\rfloor$ and $\lceil{l_s}\rceil$ in terms of ensuring the snake's survival.
 
 \begin{figure}[!h]
 \centering
@@ -541,7 +541,7 @@ Since $0 \leq e(l) \leq 1$ whereas the total move counts are in the thousands, $
 
 To determine the best approach, they can all be compared with respect to the data in Figure \ref{fig:approach_comparison} when they are run for 1000 trials. As expected from previous reflections, if Breadth-First Search was a flawless approach where the snake would never be trapped, it would have the least moves. The pure Hamiltonian cycle approach guaranteed a win, whereas the analytical approach, despite only winning 77.61\% of the time, takes 24.78\% less moves than the Hamiltonian cycle approach. The win rate and move count can be tuned arbitrarily by changing $k$.
 
-The process of this investigation was successful at comprehensively mathematically modelling the $Snake$ game as well as generating a methodology for calculating the switch length for any $m$ and $n$ in the analytical approach. Transferring the logic to a computer program was also achieved. By contrast, one significant limitation was that experimental simulations were required to be conducted for finding a) coefficients for the logarithmic model of the move count function for the BFS approach and b) finding the correct $\mu$ and $\sigma$ values for the normal distribution of the probability function $e(l)$. Thus, while the applying the process undertaken to find $l_s$ for $m=n=10$ is robust, the dependence on large quantities of experimental data can become difficulty and resource-heavy to compute for much larger sizes of $m$ and $n$, making the overall approach not practical for the general case. Hence, a relevant extension could be to find a process not requiring experimental data. Additionally, $m$ and $n$ being constrained by the restriction of the Hamiltonian cycle limit the scope of the approaches used in the investigation. Another limitation is that by only exploring two base approaches, it cannot be conclusively determined that the overall approach is the most efficient way to win the game. For example, alternative path-finding algorithms other than BFS may be less prone to being trapped.
+The process of this investigation was successful at comprehensively mathematically modelling the $Snake$ game as well as generating a methodology for calculating the switch length for any $m$ and $n$ in the analytical approach. Transferring the logic to a computer program was also achieved. By contrast, one significant limitation was that experimental simulations were required to be conducted for finding a) coefficients for the logarithmic model of the move count function for the BFS approach and b) finding the correct $\mu$ and $\sigma$ values for the normal distribution of the probability function $e(l)$. Thus, while applying the process undertaken to find $l_s$ for $m=n=10$ is robust, the dependence on large quantities of experimental data can become difficult and resource-heavy to compute for much larger sizes of $m$ and $n$, making the overall approach not practical for the general case. Hence, a relevant extension could be to find a process not requiring experimental data. Additionally, $m$ and $n$ being constrained by the restriction of the Hamiltonian cycle limit the scope of the approaches used in the investigation. Another limitation is that by only exploring two base approaches, it cannot be conclusively determined that the overall approach is the most efficient way to win the game. For example, alternative path-finding algorithms other than BFS may be less prone to being trapped.
 
 \section{Conclusion}
 
@@ -553,7 +553,7 @@ In conclusion, the most optimal algorithmic \textit{Snake} game agent was the on
 Bose, Prosenjit, and John Howat. \textit{Depth-First Search and Breadth-First Search.} Discrete Mathematics Study Center. July 12, 2015. \\\texttt{https://cglab.ca/~discmath/graphs-applications.html}
 
 \bibitem{easyspeezy2020}
-EasySpeezy. \textit{He Thought I Couldn't Speedrun the Google Snake Game...} YouTube. November 15, 2020. \url{www.youtube.com/watch?v=O3bDZX0SAfk}
+EasySpeezy. \textit{He Thought I Couldn't Speedrun the Google Snake Game...} YouTube. November 15, 2020. \url{https://www.youtube.com/watch?v=O3bDZX0SAfk}
 
 \bibitem{gadagkar2019}
 Gadagkar, Shweta. \textit{Traversing Graphs in Discrete Math.} Study.com. September 16, 2018. \\\url{https://study.com/academy/lesson/coloring-traversing-graphs-in-discrete-math.html}
@@ -577,26 +577,40 @@ Wilson, Steven. \textit{Almost Normal Distributions with Discrete Data.} Milefoo
 Zagaran. \textit{Hamilton Paths/Cycles in Grid Graphs.} Mathematics Stack Exchange. August 31, 2018. \\\url{https://math.stackexchange.com/questions/1699203/hamilton-paths-cycles-in-grid-graphs}
 \end{thebibliography}
 \pagebreak
+
 \appendix
+\appendixpage
 \section{C++ Code}\label{sec:appendix_code}
 
 \begin{figure}[!h]
 \centering
 \begin{lstlisting}
 vector<Node> shortest_path(Node des) {
+	// A "vector" represents a list and a "Node" is a data structure with
+	// variables "i" and "j", defining a vertex's position on the grid.
+	// The queue "q" is the list of pairs of vertices and associated paths.
+	// In this structure, an ordered list of vertices is stored in the queue
+	// to save memory. Taking these vertices two at a time, we have the path
+	// and the last vertex of the list is the vertex associated with the path.
     queue<vector<Node> > q{{snake.back()}};
+    
+    // "vis" is an array to mark whether a node (vertex) has been visited. For
+    // a node u, if vis[u] equals 1 then the node has been visited.
     vis.clear();
     for (Node u : snake)
       vis[u] = 1;
     vis[des] = 0;
     
+    // Perform the BFS algorithm while "q" is not empty.
     while (!q.empty()) {
       vector<Node> path = q.front();
       q.pop();
      
+      // If the target ("des") node is reached, return this path.
       if (path.back() == des)
         return path;
         
+      // Add nodes adjacent to this node that haven't already been visited to "q".
       for (Node u : path.back().adj()) {
         if (is_valid(u) && !vis[u]) {
           vis[u] = 1;
@@ -606,6 +620,7 @@ vector<Node> shortest_path(Node des) {
         }
       }
     }
+
     return {};
 }
 \end{lstlisting}
@@ -616,15 +631,39 @@ vector<Node> shortest_path(Node des) {
 \begin{figure}[!h]
 \begin{lstlisting}
 void build_cycle() {
+	// Clear the list "cycle" where the Hamiltonian cycle representation will
+	// be stored.
     cycle.clear();
+    
+    // The Hamiltonian cycle heuristic proposed by Chuyang Li consists of
+    // finding the longest path between a vertex v and adjacent vertex u. This
+    // longest path should visit each vertex exactly once getting from v to u
+    // (although this may not always be possible, which is why this is considered
+    // a heuristic). Finally, adding the edge vu to the end of the path will 
+    // complete a proper Hamiltonian cycle. Note that the implementation of the
+    // "longest_path" method is also a heuristic proposed by Chuyang Liu,
+    // available for viewing at: https://github.com/chuyangliu/snake/blob/master/.
+    
+    // "path_dir" contains this longest path.
     vector<Node> path_dir = longest_path(snake[0]), snake_path = dir_path(snake);
+    
+    // Since we are constructing a Hamiltonian cycle when the snake will also have
+    // a body, "path_dir" contains the longest path between the snake's head and
+    // its tail. To complete the cycle, rather than adding edge vu as specified
+    // above, the edges connecting each body part to the next, starting with the
+    // tail to the head, will complete the Hamiltonian cycle.
     for (Node u : snake_path)
       path_dir.push_back(u);
+    
+    // Store this path in a computer friendly manner in the "cycle" list.
     Node cur = snake.back();
     for (Node u : path_dir) {
       cycle[cur] = u;
       cur = cur + u;
     }
+    
+    // Store the size of this cycle to check from a different function if this
+    // cycle size is mn and thus verify that the heuristic worked.
     cycle_size = path_dir.size();
 }
 \end{lstlisting}
